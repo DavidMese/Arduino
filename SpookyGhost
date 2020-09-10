@@ -1,0 +1,46 @@
+#include <LiquidCrystal.h>                                      //this allows arduino to include lcd code libraries
+#include <Servo.h>                                             //this allows arduino to include servo code libraries
+
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);                     //notes which sockets on the redboard the lcd display is plugged in to
+int servoPosition;                                         //the servo will move to this position
+int photoresistor = 0;                                    //initializes the value of the photoresistor 
+int threshold = 750;                                     //a threshold for determining what will be percieved as dark or bright for the photoresistor
+Servo myservo;                                         //create a servo object
+
+void setup() 
+{
+  lcd.begin(16,2);                                            //sets the dimensions of the screen to be 16 characters wide and 2 characters high
+  lcd.clear();                                               //clears the display
+  myservo.attach(7);                                        //sets the servo input at socket 7
+  Serial.begin(9600);                                      //start a serial connection with the computer
+}
+
+void loop() 
+{
+  photoresistor = analogRead(A0);                            //this will set the photoresistor to be equal to the value read through its input A0
+  Serial.println(photoresistor);                            //prints the value of photoresistor in serial monitor on the computer
+  
+  if(photoresistor > threshold)                      //if the photoresistor detects a larger amount of light than the threshold, the following will be executed 
+    {
+    delay(20);                                                             //added a delay to avoid any lcd screen glitching errors
+    lcd.setCursor(0,0);                                                   //set the cursor to the 0,0 position at the top left corner, where the first line will be written
+    lcd.print("Turn off lights!");                                       //this will print "Turn off lights!" starting at the previously stated position  
+    lcd.setCursor(0,1);                                                 //move the cursor to the 0,1 space bellow the first line, this will be where the second line will be written
+    lcd.print("  I am scared!  ");                                     //print "I am scared" at the previously stated position
+    
+    myservo.write(100);                                            //move the servo accordingly in degrees
+    delay(20);                                                    //added a delay to avoid any lcd screen glitching errors
+    }
+    
+  else if (photoresistor < threshold)              //if the photoresistor detects a smaller amount of light than the threshold, the following will be executed 
+    {
+    delay(20);                                                          //added a delay to avoid any lcd screen glitching errors
+    lcd.setCursor(0,0);                                                //set the cursor to the 0,0 position at the top left corner, where the first line will be written
+    lcd.print("     Hello!     ");                                    //this will print "Hello!" (spaces added for centering) starting at the previously stated position  
+    lcd.setCursor(0,1);                                              //move the cursor to the 0,1 space bellow the first line, this will be where the second line will be written
+    lcd.print("My name's Casper");                                  //print "My name's casper" at the previously stated position
+   
+    myservo.write(10);                                          //move the servo accordingly in degrees
+    delay(20);                                                 //added a delay to avoid any lcd screen glitching errors
+    }
+}
